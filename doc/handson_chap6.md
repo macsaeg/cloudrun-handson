@@ -5,7 +5,7 @@
 ハンズオン（実践編）で構築する全体概要図は[こちらのリンク](https://github.com/uma-arai/cloudrun-handson/blob/main/images/06-handson-architecture-overview.png?raw=true)となります。
 
 本ハンズオンは事前に5章までのハンズオンを完了していることを前提としています。
-今回のハンズオンではリージョンは可能な限り`asia-northeast1`を利用します。
+今回のハンズオンではリージョンは可能な限り`asia-east1`を利用します。
 また、ハンズオンを実行するユーザは、基本ロールである**Owner権限を持つプロジェクト**を利用してください。
 
 では、ハンズオンをはじめましょう。
@@ -106,11 +106,11 @@ Google Cloud ConsoleからArtifact Registryのページに移動して機能をO
 
 
 ```bash
-(cd app/frontend && touch dummy && docker build -t asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v2 .)
+(cd app/frontend && touch dummy && docker build -t asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v2 .)
 ```
 
 ```bash
-docker push asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v2
+docker push asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v2
 ```
 
 1. <walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-repositories]" validationPath="/artifacts">リポジトリ</walkthrough-spotlight-pointer> に移動します。
@@ -320,7 +320,7 @@ curl -i -k https://$LB_GLOBAL_IP/backend?id="foo\%27\%20OR\%20bar\%27\%3D\%27bar
 まず、Artifact Registryのクリーンアップポリシーを確認します。
 
 ```bash
-gcloud artifacts repositories describe cnsrun-app --location=asia-northeast1 --format=json | jq .cleanupPolicies
+gcloud artifacts repositories describe cnsrun-app --location=asia-east1 --format=json | jq .cleanupPolicies
 ```
 
 最終行が`null`であれば、クリーンアップポリシーが設定されていないことを示しています。
@@ -330,14 +330,14 @@ gcloud artifacts repositories describe cnsrun-app --location=asia-northeast1 --f
 
 ```bash
 gcloud artifacts repositories set-cleanup-policies cnsrun-app \
---location=asia-northeast1 \
+--location=asia-east1 \
 --policy=./infra/json/cleanup-policy.json
 ```
 
 再度、Artifact Registryのクリーンアップポリシーを確認します。
 
 ```bash
-gcloud artifacts repositories describe cnsrun-app --location=asia-northeast1 --format=json | jq .cleanupPolicies
+gcloud artifacts repositories describe cnsrun-app --location=asia-east1 --format=json | jq .cleanupPolicies
 ```
 
 クリーンアップポリシーが表示されていることを確認できればOKです。
@@ -360,20 +360,20 @@ Cloud Deployでは、既存のターゲット定義をコンソールから更�
 
 ```bash
 APP_TYPE=frontend
-sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-northeast1/g" | sed -e "s/requireApproval: false/requireApproval: true/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
+sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-east1/g" | sed -e "s/requireApproval: false/requireApproval: true/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
 ```
 
 再度、gcloudコマンドでターゲット定義を更新します。
 
 ```bash
-gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northeast1
+gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-east1
 ```
 
 <walkthrough-path-nav path="https://console.cloud.google.com/deploy" >Cloud Deploy に移動</walkthrough-path-nav>
 
 1. <walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-delivery_pipelines]" validationPath="/deploy"> デリバリーパイプライン </walkthrough-spotlight-pointer>を選択します。
 2. `[cnsrun-frontend]`を選択します。 
-3. <walkthrough-spotlight-pointer locator="semantic({tab 'ターゲット'})" validationPath="/deploy/delivery-pipelines/asia-northeast1/cnsrun-frontend">ターゲット</walkthrough-spotlight-pointer>タブを選択します。
+3. <walkthrough-spotlight-pointer locator="semantic({tab 'ターゲット'})" validationPath="/deploy/delivery-pipelines/asia-east1/cnsrun-frontend">ターゲット</walkthrough-spotlight-pointer>タブを選択します。
 4. `[名前]`の列にあるリンクを選択し、ターゲットの詳細を確認します。
 
 `[承認が必要です]`の箇所が`はい`になっていればOKです。
@@ -383,11 +383,11 @@ gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northe
 1. フロントエンドアプリケーションに対して変更を加えてコードプッシュをするか、Cloud Buildのトリガを手動実行してみましょう。
 2. しばらくするとCode Deployが起動します。
 <walkthrough-path-nav path="https://console.cloud.google.com/deploy" >Cloud Deploy に移動</walkthrough-path-nav>
-<walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-delivery_pipelines]" validationPath="/deploy/delivery-pipelines/asia-northeast1/cnsrun-frontend"> デリバリーパイプライン </walkthrough-spotlight-pointer> → `[cnsrun-frontend]`を選択し、
+<walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-delivery_pipelines]" validationPath="/deploy/delivery-pipelines/asia-east1/cnsrun-frontend"> デリバリーパイプライン </walkthrough-spotlight-pointer> → `[cnsrun-frontend]`を選択し、
 デプロイが保留されていることが確認できます。
 3. 保留中の絵の下にある<walkthrough-spotlight-pointer locator="semantic({button '確認'})" validationPath="/deploy/delivery-pipelines/.*">確認</walkthrough-spotlight-pointer>ボタンを押します。
 4. 行の一番右にある<walkthrough-spotlight-pointer locator="semantic({link 'Review'})" validationPath="/deploy/delivery-pipelines/.*">REVIEW</walkthrough-spotlight-pointer>ボタンを押します。
-5. 承認画面から、どういった変更が発生したかを確認できます。内容を確認したら、<walkthrough-spotlight-pointer locator="semantic({button '承認'})" validationPath="/deploy/delivery-pipelines/asia-northeast1/cnsrun-frontend/releases/.*">承認</walkthrough-spotlight-pointer>ボタンを押してください。
+5. 承認画面から、どういった変更が発生したかを確認できます。内容を確認したら、<walkthrough-spotlight-pointer locator="semantic({button '承認'})" validationPath="/deploy/delivery-pipelines/asia-east1/cnsrun-frontend/releases/.*">承認</walkthrough-spotlight-pointer>ボタンを押してください。
 
 以上で、承認プロセスを導入したアプリケーションのデプロイが完了しました。
 
@@ -404,9 +404,9 @@ gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northe
 
 ### **SLIの設定**
 
-まずSLIを決定します。`[指標の選択]`では`[可用性]`を選択し、`[リクエストベース]`のSLIとして<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-northeast1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
+まずSLIを決定します。`[指標の選択]`では`[可用性]`を選択し、`[リクエストベース]`のSLIとして<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-east1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
 
-SLI の詳細では、そのまま<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-northeast1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
+SLI の詳細では、そのまま<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-east1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
 
 ### **サービスレベル目標（SLO）の作成** 
 
@@ -418,9 +418,9 @@ SLI の詳細では、そのまま<walkthrough-spotlight-pointer locator="semant
 - パフォーマンス目標
   - 99%
 
-<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-northeast1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
+<walkthrough-spotlight-pointer locator="semantic({button '続行'})" validationPath="/run/detail/asia-east1/cnsrun.*">続行</walkthrough-spotlight-pointer>を押します。
 
-最後の確認画面でSLOの設定内容を確認し、<walkthrough-spotlight-pointer cssselector="button[type='submit']" validationPath="/run/detail/asia-northeast1/cnsrun.*">SLOを作成</walkthrough-spotlight-pointer>を押下して完了です。
+最後の確認画面でSLOの設定内容を確認し、<walkthrough-spotlight-pointer cssselector="button[type='submit']" validationPath="/run/detail/asia-east1/cnsrun.*">SLOを作成</walkthrough-spotlight-pointer>を押下して完了です。
 
 通常はこのあと、アラートの設定をして、SLOの監視を行いますが、今回はSLOの設定のみで終了となります。
 
@@ -446,14 +446,14 @@ KMSのキーリングを作成します。
     
 ```bash
 KEYRING_NAME=cnsrun-keyring
-gcloud kms keyrings create $KEYRING_NAME --location=asia-northeast1
+gcloud kms keyrings create $KEYRING_NAME --location=asia-east1
 ```
 
 次にキーリングに紐づける形で鍵ペアを作成します。
 
 ```bash
 KEY_NAME=cnsrun-attestor-key
-gcloud kms keys create $KEY_NAME --location=asia-northeast1 --keyring=$KEYRING_NAME --purpose=asymmetric-signing --default-algorithm=ec-sign-p256-sha256
+gcloud kms keys create $KEY_NAME --location=asia-east1 --keyring=$KEYRING_NAME --purpose=asymmetric-signing --default-algorithm=ec-sign-p256-sha256
 ```
 
 ## **2. 認証者(Attestor)の作成**
@@ -468,7 +468,7 @@ gcloud kms keys create $KEY_NAME --location=asia-northeast1 --keyring=$KEYRING_N
 4. 公開鍵として<walkthrough-spotlight-pointer locator="semantic({button 'pkix 公開鍵を追加'})" validationPath="/security/binary-authorization/attestors">PKIX 公開鍵</walkthrough-spotlight-pointer>を選択します。
 5. 次のコマンドで表示されるキーバージョンのリソースIDをメモします。次の手順で利用します。
 ```bash
-KEY_VERSION=$(gcloud kms keys versions list --location=asia-northeast1 --keyring=$KEYRING_NAME --key=$KEY_NAME --format=json | jq -r .[].name)
+KEY_VERSION=$(gcloud kms keys versions list --location=asia-east1 --keyring=$KEYRING_NAME --key=$KEY_NAME --format=json | jq -r .[].name)
 echo $KEY_VERSION
 ```
 6. <walkthrough-spotlight-pointer locator="semantic({button 'Cloud KMS から公開鍵マテリアルをインポート'})" validationPath="/security/binary-authorization/attestors">CLOUD KMSからインポート</walkthrough-spotlight-pointer>を選択します。
@@ -486,7 +486,7 @@ echo $KEY_VERSION
 次のコマンドを実行して、最新のイメージダイジェスト（sha:256~~となっている文字列）を取得します。
 
 ```bash
-IMAGE_PATH="asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend"
+IMAGE_PATH="asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend"
 gcloud artifacts docker images list $IMAGE_PATH --sort-by="~UPDATE_TIME" --format='value(version)' --limit=1
 ```
 
@@ -510,7 +510,7 @@ gcloud beta container binauthz attestations sign-and-create \
     --artifact-url="${IMAGE_TO_ATTEST}" \
     --attestor=cnsrun-attestor \
     --attestor-project="${GOOGLE_CLOUD_PROJECT}" \
-    --keyversion-location=asia-northeast1 \
+    --keyversion-location=asia-east1 \
     --keyversion-keyring="${KEYRING_NAME}" \
     --keyversion-key="${KEY_NAME}" \
     --keyversion="${KEY_VERSION}"
@@ -539,7 +539,7 @@ gcloud beta container binauthz attestations sign-and-create \
 1. フロントエンドアプリケーション `cnsrun-frontend` を選択します。
 2. <walkthrough-spotlight-pointer cssSelector="[cfcrouterlink=security]" validationPath="/run/detail/.*">セキュリティ</walkthrough-spotlight-pointer> タブを選択します。
 3. <walkthrough-spotlight-pointer cssSelector="[formcontrolname=binauthzNamedPolicySelect]" validationPath="/run/detail/.*">ポリシーを選択</walkthrough-spotlight-pointer> から、`default`を選択します。
-4. <walkthrough-spotlight-pointer locator="semantic({button 'サービスの Binary Authorization の変更を適用する'})" validationPath="/run/detail/asia-northeast1/cnsrun-frontend/security">適用</walkthrough-spotlight-pointer>を押します。
+4. <walkthrough-spotlight-pointer locator="semantic({button 'サービスの Binary Authorization の変更を適用する'})" validationPath="/run/detail/asia-east1/cnsrun-frontend/security">適用</walkthrough-spotlight-pointer>を押します。
 
 以上で、Binary Authorizationによる証明書の検証を有効にする設定が完了しました。
 
@@ -548,7 +548,7 @@ gcloud beta container binauthz attestations sign-and-create \
 では、実際に証明書が付与されていないイメージダイジェストを持つリビジョンをCloud Runコンソールから手動でデプロイしてみましょう。
 
 1. フロントエンドアプリケーション `cnsrun-frontend` を選択します。
-2. <walkthrough-spotlight-pointer cssSelector="a[cfciamcheck='run.services.update']" validationPath="/run/detail/asia-northeast1/cnsrun-frontend/.*">新しいリビジョンの編集とデプロイ</walkthrough-spotlight-pointer>を押します。
+2. <walkthrough-spotlight-pointer cssSelector="a[cfciamcheck='run.services.update']" validationPath="/run/detail/asia-east1/cnsrun-frontend/.*">新しいリビジョンの編集とデプロイ</walkthrough-spotlight-pointer>を押します。
 3. 証明書がないコンテナイメージに切り替えます。`[コンテナイメージのURL]`から <walkthrough-spotlight-pointer locator="semantic({button '選択'})" validationPath="/run/deploy/.*">選択</walkthrough-spotlight-pointer> を押して、古いハッシュのイメージを選択します。
 4. <walkthrough-spotlight-pointer cssSelector="[formcontrolname=serveImmediately]" validationPath="/run/deploy/.*">このリビジョンをすぐに利用する</walkthrough-spotlight-pointer>にチェックを入れます。
 5. <walkthrough-spotlight-pointer cssSelector="[type=submit]" validationPath="/run/deploy/.*">デプロイ</walkthrough-spot-pointer> を押します。

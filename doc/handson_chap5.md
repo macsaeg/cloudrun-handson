@@ -4,7 +4,7 @@
 
 ハンズオン（基本編）で構築する全体概要図は[こちらのリンク](https://github.com/uma-arai/cloudrun-handson/blob/main/images/05-handson-architecture-overview.png?raw=true)となります。
 
-今回のハンズオンではリージョンは可能な限り`asia-northeast1`を利用します。
+今回のハンズオンではリージョンは可能な限り`asia-east1`を利用します。
 
 また、ハンズオンを実行するユーザは、基本ロールである「`Owner`」権限を持つプロジェクトを利用してください。
 「`Editor`」 権限の場合、都度権限が足りないケースが発生します。
@@ -62,13 +62,13 @@ gcloud コマンドラインインタフェースは、Google Cloud でメイン
 Cloud Run の利用するリージョン、プラットフォームのデフォルト値を設定します。
 
 ```bash
-gcloud config set run/region asia-northeast1
+gcloud config set run/region asia-east1
 gcloud config set run/platform managed
 ```
 
 ここではリージョンを東京、プラットフォームをフルマネージドに設定しました。この設定によりgcloud コマンドから Cloud Run を操作するときに毎回指定する必要がなくなります。
 なお、他のサービスにおいてもリージョンを指定する箇所は度々登場します。
-今回のハンズオンではリージョンは可能な限り`asia-northeast1`を利用します。
+今回のハンズオンではリージョンは可能な限り`asia-east1`を利用します。
 
 <walkthrough-footnote>CLI（gcloud）で利用するプロジェクトの指定、Cloud Run のデフォルト値の設定が完了しました。次にハンズオンで利用する機能（API）を有効化します。</walkthrough-footnote>
 
@@ -91,9 +91,9 @@ teachme doc/handson_index.md
 ### **3. gcloud のデフォルト設定**
 
 ```bash
-gcloud config set run/region asia-northeast1
+gcloud config set run/region asia-east1
 gcloud config set run/platform managed
-REGION=asia-northeast1
+REGION=asia-east1
 ```
 
 途中まで進めていたチュートリアルのページまで `[次へ]` ボタンを押し、進めてください。
@@ -177,19 +177,19 @@ GUI を操作し Cloud Run の管理画面を開いておきましょう。
 ### **1. アプリケーション用リポジトリを作成（Artifact Registry）**
 
 ```bash
-gcloud artifacts repositories create cnsrun-app --repository-format=docker --location=asia-northeast1 --description="Docker repository for the-cloud-run app"
+gcloud artifacts repositories create cnsrun-app --repository-format=docker --location=asia-east1 --description="Docker repository for the-cloud-run app"
 ```
 
 ### **2. docker コマンドの認証設定**
 
 ```bash
-gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
+gcloud auth configure-docker asia-east1-docker.pkg.dev --quiet
 ```
 
 ### **3. ローカル（Cloud Shell 上）にコンテナを作成**
 
 ```bash
-(cd app/frontend && docker build -t asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1 .)
+(cd app/frontend && docker build -t asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1 .)
 ```
 
 **コラム**: カレントディレクトリを変えずに実行するために括弧でくくっています。
@@ -199,7 +199,7 @@ gcloud auth configure-docker asia-northeast1-docker.pkg.dev --quiet
 作成したコンテナをコンテナレジストリ（Artifact Registry）へ登録（プッシュ）します。
 
 ```bash
-docker push asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1
+docker push asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1
 ```
 
 ### **5. サービスアカウントの作成**
@@ -215,7 +215,7 @@ gcloud iam service-accounts create cnsrun-app-frontend --display-name "Service A
 ようやくデプロイまでの準備が整いました。Cloud Run にデプロイをしましょう。
 
 ```bash
-gcloud run deploy cnsrun-frontend --image=asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1 \
+gcloud run deploy cnsrun-frontend --image=asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/frontend:v1 \
 --allow-unauthenticated \
 --service-account=cnsrun-app-frontend
 ```
@@ -252,7 +252,7 @@ Cloud Buildのコンソール画面から設定をしましょう。
 1. <walkthrough-spotlight-pointer cssSelector="a[id='cfctest-section-nav-item-CLOUD_BUILD_REPOSITORIES']" validationPath="/cloud-build/.*">リポジトリ</walkthrough-spotlight-pointer>メニューに遷移します。
 2. <walkthrough-spotlight-pointer locator="semantic({tab '第 2 世代'})" validationPath="/cloud-build/repositories/2nd-gen">第2世代</walkthrough-spotlight-pointer>のタブを選択して、<walkthrough-spotlight-pointer locator="semantic({button 'ホスト接続を作成'})" validationPath="/cloud-build/repositories/2nd-gen">ホスト接続を作成</walkthrough-spotlight-pointer>よりGitHubリポジトリとの接続を行います。
 3. `[新しいホストに接続]`において、プロバイダ`[GitHub]`を選択します。
-   - リージョン：`asia-northeast1`
+   - リージョン：`asia-east1`
    - 名前：`cnsrun-app-handson`
 4. <walkthrough-spotlight-pointer locator="semantic({button '接続'})" validationPath="/cloud-build/connections/create">接続</walkthrough-spotlight-pointer>ボタンを押します。
 
@@ -296,7 +296,7 @@ gcloud projects add-iam-policy-binding ${GOOGLE_CLOUD_PROJECT} \
 次に、Cloud Buildの起動対象となる「ソースコードのプッシュ」対象のリポジトリ名を取得します。
 
 ```bash
-REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-northeast1 --format=json | jq -r .[].name)
+REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-east1 --format=json | jq -r .[].name)
 ```
 
 最後に、Cloud Buildのトリガを作成します。
@@ -304,7 +304,7 @@ REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson
 ```bash
 gcloud beta builds triggers create github \
 --name=cnsrun-frontend-trigger \
---region=asia-northeast1 \
+--region=asia-east1 \
 --repository="$REPO_NAME" \
 --branch-pattern=^main$ \
 --build-config=app/frontend/cloudbuild_push.yaml \
@@ -366,8 +366,8 @@ Cloud Deployではデリバリーパイプラインを作成し、Cloud Runを�
 
 ```bash
 APP_TYPE=frontend
-sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-northeast1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
-gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northeast1
+sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-east1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
+gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-east1
 ```
 <walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-delivery_pipelines]">デリバリーパイプライン</walkthrough-spotlight-pointer>、<walkthrough-spotlight-pointer cssSelector="[id=cfctest-section-nav-item-targets]">デプロイ先ターゲット</walkthrough-spotlight-pointer>の設定が完了したことをコンソールから確認して次に進みましょう。
 
@@ -416,7 +416,7 @@ git push origin main
 ビルドが正常終了したら、再度リクエストを発行して修正が反映されたことを確認しましょう。
 
 ```bash
-FRONTEND_URL=$(gcloud run services describe cnsrun-frontend --region=asia-northeast1 --format='value(status.url)')
+FRONTEND_URL=$(gcloud run services describe cnsrun-frontend --region=asia-east1 --format='value(status.url)')
 curl -i $FRONTEND_URL/frontend
 ```
 
@@ -498,14 +498,14 @@ gcloud compute forwarding-rules create --global cnsrun-lb \
 ### **3. NEG の作成、バックエンドサービスへの追加**
 
 ```bash
-gcloud beta compute network-endpoint-groups create cnsrun-app-neg-asia-northeast1 \
-    --region=asia-northeast1 \
+gcloud beta compute network-endpoint-groups create cnsrun-app-neg-asia-east1 \
+    --region=asia-east1 \
     --network-endpoint-type=SERVERLESS \
     --cloud-run-service=cnsrun-frontend
 
 gcloud beta compute backend-services add-backend --global cnsrun-backend-services \
-    --network-endpoint-group-region=asia-northeast1 \
-    --network-endpoint-group=cnsrun-app-neg-asia-northeast1
+    --network-endpoint-group-region=asia-east1 \
+    --network-endpoint-group=cnsrun-app-neg-asia-east1
 ```
 
 ## **フロントエンドアプリケーションの修正**
@@ -533,7 +533,7 @@ git push origin main
 まずは、Cloud Runから払い出されたURLではアクセスができないことを確認します。
 
 ```bash
-FRONTEND_URL=$(gcloud run services describe cnsrun-frontend --region=asia-northeast1 --project=${GOOGLE_CLOUD_PROJECT} --format='value(status.url)')
+FRONTEND_URL=$(gcloud run services describe cnsrun-frontend --region=asia-east1 --project=${GOOGLE_CLOUD_PROJECT} --format='value(status.url)')
 curl -i $FRONTEND_URL/frontend
 ```
 
@@ -581,7 +581,7 @@ gcloud compute networks subnets create cnsrun-${GOOGLE_CLOUD_PROJECT} \
 --range=10.0.0.0/24 \
 --stack-type=IPV4_ONLY \
 --network=cnsrun-app \
---region=asia-northeast1 \
+--region=asia-east1 \
 --enable-private-ip-google-access
 ```
 
@@ -594,11 +594,11 @@ VPCとサブネットが作成されたことを確認し、次に進みます�
 フロントエンドアプリケーション同様、Artifact Registryに対してバックエンドアプリケーションのイメージを登録します。
 
 ```bash
-(cd app/backend && docker build -t asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/backend:v1 .)
+(cd app/backend && docker build -t asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/backend:v1 .)
 ```
 
 ```bash
-docker push asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/backend:v1
+docker push asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/backend:v1
 ```
 
 ### **2. Cloud Build の作成**
@@ -606,13 +606,13 @@ docker push asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/ba
 Cloud Buildのトリガを作成します。
 
 ```bash
-REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-northeast1 --format=json | jq -r .[].name)
+REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-east1 --format=json | jq -r .[].name)
 ```
 
 ```bash
 gcloud beta builds triggers create github \
 --name=cnsrun-backend-trigger \
---region=asia-northeast1 \
+--region=asia-east1 \
 --repository="$REPO_NAME" \
 --branch-pattern=^main$ \
 --build-config=app/backend/cloudbuild_push.yaml \
@@ -625,8 +625,8 @@ gcloud beta builds triggers create github \
 
 ```bash
 APP_TYPE=backend
-sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-northeast1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
-gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northeast1
+sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-east1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
+gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-east1
 ```
 
 ### **4. フロントエンドアプリケーションからのリクエストを受け付ける**
@@ -658,7 +658,7 @@ gcloud iam service-accounts create cnsrun-app-backend --display-name "Service Ac
 
 ```bash
 gcloud builds triggers run cnsrun-backend-trigger \
---region=asia-northeast1 \
+--region=asia-east1 \
 --branch=main
 ```
 
@@ -782,7 +782,7 @@ Cloud SQL のエディションの選択します。
 リージョンとゾーンの可用性の選択します。こちらも通常は`複数のゾーン（高可用性）`を選択しますが、料金の関係上`シングルゾーン`にします。
 
 - `[リージョン]`
-  - `asia-northeast1`
+  - `asia-east1`
 - `[ゾーンの可用性]`
   - `シングルゾーン`
 
@@ -840,7 +840,7 @@ Cloud SQLインスタンスの作成を待っている間に進められる箇�
 DB_PASSWORD=DB-user-pass-1234
 echo -n "$DB_PASSWORD" | gcloud secrets create cnsrun-app-db-password \
 --replication-policy=user-managed \
---locations=asia-northeast1 \
+--locations=asia-east1 \
 --data-file=-
 ```
 
@@ -1052,11 +1052,11 @@ JSON形式の応答が返ってくればOKです。
 フロントエンドアプリケーション同様、Artifact Registryに対してジョブのイメージを登録します。
 
 ```bash
-(cd app/batch && docker build -t asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1 .)
+(cd app/batch && docker build -t asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1 .)
 ```
 
 ```bash
-docker push asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1
+docker push asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1
 ```
 
 
@@ -1075,8 +1075,8 @@ Cloud Buildから作成してもいいのですが、手動で作成しておく
   
 ```bash
 gcloud run jobs deploy cnsrun-batch \
---image=asia-northeast1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1 \
---region=asia-northeast1 \
+--image=asia-east1-docker.pkg.dev/${GOOGLE_CLOUD_PROJECT}/cnsrun-app/batch:v1 \
+--region=asia-east1 \
 --service-account=cnsrun-app-batch \
 --parallelism=1 \
 --execute-now
@@ -1091,13 +1091,13 @@ gcloud run jobs deploy cnsrun-batch \
 CI/CDの設定のためCloud Buildのトリガを作成します。
 
 ```bash
-REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-northeast1 --format=json | jq -r .[].name)
+REPO_NAME=$(gcloud beta builds repositories list --connection=cnsrun-app-handson --region=asia-east1 --format=json | jq -r .[].name)
 ```
 
 ```bash
 gcloud beta builds triggers create github \
 --name=cnsrun-batch-trigger \
---region=asia-northeast1 \
+--region=asia-east1 \
 --repository="$REPO_NAME" \
 --branch-pattern=^main$ \
 --build-config=app/batch/cloudbuild_push.yaml \
@@ -1112,8 +1112,8 @@ gcloud beta builds triggers create github \
 
 ```bash
 APP_TYPE=batch
-sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-northeast1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
-gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-northeast1
+sed -e "s/PROJECT_ID/${GOOGLE_CLOUD_PROJECT}/g" doc/clouddeploy.yml | sed -e "s/REGION/asia-east1/g" | sed -e "s/SERVICE_NAME/cnsrun-${APP_TYPE}/g" > /tmp/clouddeploy_${APP_TYPE}.yml
+gcloud deploy apply --file=/tmp/clouddeploy_${APP_TYPE}.yml --region asia-east1
 ```
 
 足回りができました。次に進みましょう。
@@ -1161,9 +1161,9 @@ gcloud secrets add-iam-policy-binding cnsrun-app-db-password \
 
 ```bash
 gcloud scheduler jobs create http cnsrun-batch-job-scheduler \
-  --location=asia-northeast1 \
+  --location=asia-east1 \
   --schedule="* * * * *" \
-  --uri="https://asia-northeast1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${GOOGLE_CLOUD_PROJECT}/jobs/cnsrun-batch:run" \
+  --uri="https://asia-east1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${GOOGLE_CLOUD_PROJECT}/jobs/cnsrun-batch:run" \
   --http-method POST \
   --time-zone=Asia/Tokyo \
   --attempt-deadline=5m \
