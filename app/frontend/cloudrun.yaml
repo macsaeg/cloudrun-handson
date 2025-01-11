@@ -13,12 +13,12 @@ spec:
         autoscaling.knative.dev/maxScale: '2'
         run.googleapis.com/execution-environment: gen2
 #         TODO: change for your own vpc name
-#        run.googleapis.com/network-interfaces: '[{"network":"cnsrun-app", "subnetwork":"cnsrun-macsaeg"}]'
+#        run.googleapis.com/network-interfaces: '[{"network":"cnsrun-app", "subnetwork":"cnsrun-cloudrun-handson-447310"}]'
 #        run.googleapis.com/vpc-access-egress: all-traffic
     spec:
       containerConcurrency: 10
       timeoutSeconds: 300
-      serviceAccountName: cnsrun-app-frontend@macsaeg.iam.gserviceaccount.com
+      serviceAccountName: cnsrun-app-frontend@cloudrun-handson-447310.iam.gserviceaccount.com
       containers:
       - image: frontend
         env:
