@@ -890,7 +890,7 @@ gcloud projects add-iam-policy-binding ${GOOGLE_CLOUD_PROJECT} \
 2. <walkthrough-spotlight-pointer locator="semantic({button 'ユーザー アカウントを追加'})" validationPath="/sql/.*">ユーザーアカウントを追加</walkthrough-spotlight-pointer>ボタンを押します。
 3. 組み込み認証を選択します。
 4. ユーザー名は`app`を入力します。
-5. ポリシーに沿って入力をします。以前に`DB_PASSWORD`としてSecret Managerに設定した値（例：DB-app-pass-1234）にします。。
+5. ポリシーに沿って入力をします。以前に`DB_PASSWORD`としてSecret Managerに設定した値（例：DB-user-pass-1234）にします。。(Secrets Managerに登録するように記載された例のパスワードと不一致なので修正)
 6. <walkthrough-spotlight-pointer cssSelector="button[type=submit]" validationPath="/sql/.*">追加</walkthrough-spotlight-pointer>を押します。
 
 ### **3. テーブル作成**
