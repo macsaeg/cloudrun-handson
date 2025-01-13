@@ -19,7 +19,7 @@ type Response struct {
 
 func main() {
 	http.HandleFunc("/frontend", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello forth hands-on\n")
+		fmt.Fprintf(w, "Hello fifth luna  hands-on\n")
 	})
 
 	http.HandleFunc("/random", func(w http.ResponseWriter, r *http.Request) {
